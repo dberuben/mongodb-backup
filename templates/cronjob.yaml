@@ -1,0 +1,44 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "mongodb-backup.fullname" . }}
+  labels:
+{{ include "mongodb-backup.labels" . | indent 4 }}
+spec:
+  schedule: "{{.Values.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            application: {{ template "mongodb-backup.fullname" . }}
+            version: "0.1"
+        spec:
+          restartPolicy: OnFailure
+          concurrencyPolicy: Replace
+          successfulJobsHistoryLimit: 0
+          failedJobsHistoryLimit: 0
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            env:
+            - name: MONGO_URI
+              value: {{ .Values.conf.mongo_uri }} 
+            - name: MONGO_USERNAME 
+              value: {{ .Values.conf.mongo_username }} 
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mongodb-backup.fullname" . }}
+                  key: mongo-password
+            - name: MONGO_AUTH_DB
+              value: {{ .Values.conf.mongo_auth_db }} 
+            - name: AZURE_SA
+              value: {{ .Values.conf.azure_sa }} 
+            - name: AZURE_BLOB_CONTAINER
+              value: {{ .Values.conf.azure_blob_container }} 
+            - name: AZURE_DESTINATION_KEY
+              value: {{ .Values.conf.azure_destination_key }} 
+            - name: DB
+              value: {{ .Values.conf.db }} 

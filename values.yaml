@@ -1,0 +1,28 @@
+# Default values for mongodb-backup.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: acidozik/mongobackup
+  tag: latest
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+namespace: backup-mongodb 
+
+mongoPassword: 
+
+conf:
+  mongo_uri: 
+  mongo_username: 
+  mongo_auth_db: 
+  azure_sa: 
+  azure_blob_container: 
+  azure_destination_key: 
+  db: 
+
+schedule: "0 */4 * * *"
